@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.com.zupacademy.caico";
+option java_outer_classname = "KeyManagerRestOuterClass";
+
+package br.com.zupacademy.caico;
+
+service KeyManagerRestService {
+  rpc register (KeyManagerRequest) returns (KeyManagerResponse) {}
+}
+
+enum TypeKey{
+  UNKNOWN = 0;
+  DOCUMENT = 1;
+  EMAIL = 2;
+  CELPHONE = 3;
+  RANDOM = 4;
+}
+
+enum TypeAccount{
+  UNKNOWN_TYPE_ACCOUNT = 0;
+  CORRENTE = 1;
+  POUPANCA = 2;
+}
+
+message KeyManagerRequest {
+  string uuidUsuario  = 1;
+  TypeKey typeKey = 2;
+  string key = 3;
+  TypeAccount typeAccount = 4;
+}
+
+message KeyManagerResponse {
+  string message = 1;
+}

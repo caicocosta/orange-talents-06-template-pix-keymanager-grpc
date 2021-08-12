@@ -20,8 +20,8 @@ enum TypeKey{
 
 enum TypeAccount{
   UNKNOWN_TYPE_ACCOUNT = 0;
-  CORRENTE = 1;
-  POUPANCA = 2;
+  CONTA_CORRENTE = 1;
+  CONTA_POUPANCA = 2;
 }
 
 message KeyManagerRequest {
@@ -32,5 +32,5 @@ message KeyManagerRequest {
 }
 
 message KeyManagerResponse {
-  string message = 1;
+  string pixId = 1;
 }

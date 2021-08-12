@@ -10,6 +10,6 @@ import io.micronaut.http.client.annotation.Client
 @Client("\${itau.contas.url}")
 interface ItauClient {
 
-    @Get("/api/v1/clientes/{clientId}/contas{?tipo}")
-    fun findAccounts(@PathVariable clientId: String, @QueryValue("type") type: String): HttpResponse<AccountsResponse>
+    @Get("/api/v1/clientes/{clienteId}/contas{?tipo}")
+    fun findAccounts(@PathVariable clienteId: String, @QueryValue("tipo") type: String): HttpResponse<AccountsResponse>
 }

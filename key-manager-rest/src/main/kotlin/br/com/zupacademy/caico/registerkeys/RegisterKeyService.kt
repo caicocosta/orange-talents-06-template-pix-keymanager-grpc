@@ -6,7 +6,6 @@ import br.com.zupacademy.caico.exceptionsmodels.InvalidFormat
 import br.com.zupacademy.caico.externalservices.ItauClient
 import br.com.zupacademy.caico.validators.KeyTypeValidator
 import io.micronaut.validation.Validated
-import org.hibernate.exception.ConstraintViolationException
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Singleton

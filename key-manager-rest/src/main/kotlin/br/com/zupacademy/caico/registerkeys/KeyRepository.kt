@@ -7,5 +7,4 @@ import java.util.*
 @Repository
 interface KeyRepository : JpaRepository<PixKeys, UUID> {
     fun existsByKey(key: String): Boolean
-
 }

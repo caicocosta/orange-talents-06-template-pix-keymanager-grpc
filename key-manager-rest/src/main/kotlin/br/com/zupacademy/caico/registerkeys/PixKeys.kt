@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull
 
 @Entity
 data class PixKeys(
-    @ValidUUID
+    @ValidUUID(message = "client Id com formato inválido")
     @field:NotBlank
     val clientId: UUID,
     val key: String,

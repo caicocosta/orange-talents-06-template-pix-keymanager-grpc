@@ -25,14 +25,10 @@ class RegisterKeyService(
     @Transactional
     fun register(@Valid key: PixKeys): PixKeys? {
 
-        try {
-            val response = itauClient.findAccounts(key.clientId.toString(), key.typeAccount.name)
-            if (response.body() == null){
-                throw IllegalStateException("Conta não encontrada no Itau")
-            }
-        } catch (e: Exception){
-            throw Exception("Erro ao se conectar ao servidor")
-        }
+         val response = itauClient.findAccounts(key.clientId.toString(), key.typeAccount.name)
+         if (response.body() == null){
+            throw IllegalStateException("Conta não encontrada no Itau")
+         }
 
         if(keyRepository.existsByKey(key.key)){
             logger.info("Validando chave já cadatrada")

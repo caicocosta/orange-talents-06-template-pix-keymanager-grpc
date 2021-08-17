@@ -12,4 +12,4 @@ import kotlin.annotation.AnnotationTarget.*
          flags = [Pattern.Flag.CASE_INSENSITIVE])
 @Retention(RUNTIME)
 @Target(FIELD, CONSTRUCTOR, PROPERTY, VALUE_PARAMETER)
-annotation class ValidUUID()
+annotation class ValidUUID(val message: String)

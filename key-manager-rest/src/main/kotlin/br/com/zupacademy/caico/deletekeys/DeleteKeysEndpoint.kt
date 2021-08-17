@@ -1,8 +1,6 @@
 package br.com.zupacademy.caico.deletekeys
 
-import br.com.zupacademy.caico.DeletePixKeyRequest
-import br.com.zupacademy.caico.DeletePixKeyResponse
-import br.com.zupacademy.caico.KeyManagerRestServiceGrpc
+import br.com.zupacademy.caico.*
 import br.com.zupacademy.caico.validators.ExceptionAdvice
 import io.grpc.stub.StreamObserver
 import java.util.*
@@ -11,7 +9,7 @@ import javax.inject.Singleton
 
 @ExceptionAdvice
 @Singleton
-class DeleteKeysEndpoint(@Inject val deleteKeyService: DeleteKeyService): KeyManagerRestServiceGrpc.KeyManagerRestServiceImplBase() {
+class DeleteKeysEndpoint(@Inject val deleteKeyService: DeleteKeyService): KeyManagerDeleteServiceGrpc.KeyManagerDeleteServiceImplBase() {
 
     override fun delete(request: DeletePixKeyRequest, responseObserver: StreamObserver<DeletePixKeyResponse>?) {
 

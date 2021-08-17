@@ -8,6 +8,9 @@ package br.com.zupacademy.caico;
 
 service KeyManagerRestService {
   rpc register (KeyManagerRequest) returns (KeyManagerResponse) {}
+}
+
+service KeyManagerDeleteService {
   rpc delete (DeletePixKeyRequest) returns (DeletePixKeyResponse) {}
 }
 

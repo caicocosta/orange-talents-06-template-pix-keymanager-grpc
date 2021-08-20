@@ -13,4 +13,9 @@ interface ClientBcb {
         produces = [MediaType.APPLICATION_XML],
         consumes = [MediaType.APPLICATION_XML])
     fun create(@Body request: CreateKeyBcbRequest): HttpResponse<CreateKeyBcbResponse>
+
+    @Delete("/api/v1/pix/keys/{key}",
+    produces = [MediaType.APPLICATION_XML],
+    consumes = [MediaType.APPLICATION_XML])
+    fun delete(@Body request: DeleteKeyBcbRequest, @PathVariable key: String): HttpResponse<DeleteKeyBcbResponse>
 }

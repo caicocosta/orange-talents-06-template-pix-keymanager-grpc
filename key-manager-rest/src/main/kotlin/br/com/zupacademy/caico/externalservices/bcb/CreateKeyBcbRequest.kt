@@ -14,12 +14,11 @@ data class CreateKeyBcbRequest(
 ){
     companion object {
         fun of(pixKey: PixKeys, account: AccountsResponse): CreateKeyBcbRequest {
-            println("TEste: \${ispb.itau}")
             return CreateKeyBcbRequest(
                 keyType = pixKey.toTypeBcb(),
                 key = pixKey.key,
                 bankAccount = BankAccount(
-                    participant = "\${ispb.itau}",
+                    participant = account.instituicao.ispb,
                     branch = account.agencia,
                     accountNumber = account.numero,
                     accountType = if (pixKey.typeAccount == TypeAccount.CONTA_CORRENTE) AccountType.CACC else AccountType.SVGS

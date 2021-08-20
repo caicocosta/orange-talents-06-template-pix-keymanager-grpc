@@ -9,13 +9,15 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
 
 @Entity
 data class PixKeys(
     @ValidUUID(message = "client Id com formato inválido")
     @field:NotBlank
     val clientId: UUID,
-    val key: String,
+    @field:NotNull @field:Size(max = 77)
+    var key: String,
     @field:NotNull
     val typeKey: TypeKey,
     @field:NotNull
@@ -38,6 +40,10 @@ data class PixKeys(
             return "CPF"
         } else
             return "CNPJ"
+    }
+
+    fun updateKey(key: String) {
+        this.key = key
     }
 
     @Id

@@ -6,6 +6,7 @@ import br.com.zupacademy.caico.exceptionsmodels.InvalidFormat
 import br.com.zupacademy.caico.externalservices.bcb.*
 import br.com.zupacademy.caico.externalservices.itau.ItauClient
 import br.com.zupacademy.caico.validators.KeyTypeValidator
+import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
@@ -38,20 +39,23 @@ class RegisterKeyService(
             throw AlreadyExistsException("Chave já cadastra")
         }
 
-        val bcbRequest = CreateKeyBcbRequest.of(key, response.body())
-        val bcbResponse = clientBcb.create(bcbRequest)
-
-        if (bcbResponse.status != HttpStatus.CREATED) {
-            throw IllegalStateException("Error ao registrar chave Pix no Banco Central do Brasil")
-        }
-
         if(key.typeKey != TypeKey.RANDOM){
             if(!keyTypeValidator.isValidFormat(key.typeKey, key.key)){
                 throw InvalidFormat("Chave com formato inválida")
             }
         }
-
         val createdKey: PixKeys = keyRepository.save(key)
+
+        lateinit var bcbResponse: HttpResponse<CreateKeyBcbResponse>
+
+        try {
+            val bcbRequest = CreateKeyBcbRequest.of(key, response.body())
+            bcbResponse = clientBcb.create(bcbRequest)
+        } catch (e: Exception) {
+            throw IllegalStateException("Error ao registrar chave Pix no Banco Central do Brasil")
+        }
+
+        key.updateKey(bcbResponse.body().key)
         return createdKey
     }
 

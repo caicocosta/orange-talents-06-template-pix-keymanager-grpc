@@ -8,7 +8,7 @@ fun KeyManagerRequest.toModel() : PixKeys{
     return PixKeys(
         clientId = UUID.fromString(uuidUsuario),
         typeKey = typeKey,
-        key = if (typeKey == TypeKey.RANDOM) UUID.randomUUID().toString() else key,
+        key = key,
         typeAccount = typeAccount
     )
 }

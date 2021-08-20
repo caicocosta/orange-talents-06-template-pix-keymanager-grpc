@@ -1,4 +1,4 @@
-package br.com.zupacademy.caico.externalservices
+package br.com.zupacademy.caico.externalservices.itau
 
 import br.com.zupacademy.caico.TypeAccount
 import io.micronaut.http.HttpResponse

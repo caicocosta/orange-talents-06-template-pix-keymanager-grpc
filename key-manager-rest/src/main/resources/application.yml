@@ -25,5 +25,5 @@ flyway:
         - classpath:databasemigrations
 
 #Serviços externos
-
 itau.contas.url: ${ITAU_URL:`http://localhost:9091`}
+bcb.url: ${BCB_URL:`http://localhost:8082`}

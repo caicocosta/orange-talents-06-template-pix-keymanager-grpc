@@ -4,8 +4,11 @@ import br.com.zupacademy.caico.KeyManagerRequest
 import br.com.zupacademy.caico.KeyManagerRestServiceGrpc
 import br.com.zupacademy.caico.TypeAccount
 import br.com.zupacademy.caico.TypeKey
-import br.com.zupacademy.caico.externalservices.AccountsResponse
-import br.com.zupacademy.caico.externalservices.ItauClient
+import br.com.zupacademy.caico.externalservices.bcb.*
+import br.com.zupacademy.caico.externalservices.itau.AccountOwner
+import br.com.zupacademy.caico.externalservices.itau.AccountsResponse
+import br.com.zupacademy.caico.externalservices.itau.Institution
+import br.com.zupacademy.caico.externalservices.itau.ItauClient
 import br.com.zupacademy.caico.validators.KeyTypeValidator
 import io.grpc.ManagedChannel
 import io.grpc.Status
@@ -15,6 +18,7 @@ import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
 import io.micronaut.http.MutableHttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
@@ -22,6 +26,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 import org.junit.jupiter.api.assertThrows as myAsserts
@@ -36,9 +41,14 @@ internal class RegisterKeysEndpointTest(
     lateinit var itauClient: ItauClient
 
     @Inject
+    lateinit var clientBcb: ClientBcb
+
+    @Inject
     lateinit var keyTypeValidator: KeyTypeValidator
 
     lateinit var key: PixKeys
+
+    lateinit var createKeyBcbRequest: CreateKeyBcbRequest
 
     companion object{
         val client_id = UUID.randomUUID()
@@ -54,9 +64,17 @@ internal class RegisterKeysEndpointTest(
             TypeAccount.CONTA_CORRENTE
         )
 
+        createKeyBcbRequest = CreateKeyBcbRequest.of(key, accountResponseItau().body())
+
         Mockito.`when`(itauClient
             .findAccounts(key.clientId.toString(), key.typeAccount.name))
             .thenReturn(accountResponseItau())
+
+        Mockito.`when`(clientBcb
+            .create(createKeyBcbRequest))
+            .thenReturn(accountResponseBcb("99999999999"))
+
+
     }
 
     @Test
@@ -201,24 +219,27 @@ internal class RegisterKeysEndpointTest(
         }
     }
 
-    @Test
-    internal fun `deve cadastrar nova chave pix com chave aleatoria`() {
-        val response = grpcClient.register(KeyManagerRequest.newBuilder()
-            .setUuidUsuario(key.clientId.toString())
-            .setTypeKey(TypeKey.RANDOM)
-            .setKey(key.key)
-            .setTypeAccount(key.typeAccount)
-            .build())
+    /*@Test
+    internal fun `nao deve cadastrar nova chave pix quando der erro ao acessar o bcb`() {
 
-        val randomKey = keyRepository.findById(UUID.fromString(response.pixId))
-            .orElseThrow()
+        Mockito.`when`(clientBcb
+            .create(createKeyBcbRequest))
+            .thenReturn(HttpResponse.unprocessableEntity())
 
-        with(randomKey){
-            assertNotNull(randomKey)
-            //println("Caico: $key")
-           // assertTrue(key.matches("/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\$/i\n".toRegex()))
+        val error = myAsserts<StatusRuntimeException> {
+            grpcClient.register(KeyManagerRequest.newBuilder()
+                .setUuidUsuario(key.clientId.toString())
+                .setTypeKey(TypeKey.RANDOM)
+                .setKey(key.key)
+                .setTypeAccount(key.typeAccount)
+                .build())
         }
-    }
+
+        with(error){
+            assertEquals(HttpStatus.PRECONDITION_FAILED.code, status.code)
+            assertEquals("Error ao registrar chave Pix no Banco Central do Brasil", status.description)
+        }
+    }*/
 
     @Test
     internal fun `deve retornar erro por informar um tipo de chave invalido`() {
@@ -243,11 +264,42 @@ internal class RegisterKeysEndpointTest(
         return Mockito.mock(ItauClient::class.java)
     }
 
-    fun accountResponseItau(): MutableHttpResponse<AccountsResponse>? {
+    @MockBean(ClientBcb::class)
+    fun clientBcb(): ClientBcb? {
+        return Mockito.mock(ClientBcb::class.java)
+    }
+
+    fun accountResponseItau(): MutableHttpResponse<AccountsResponse> {
         return HttpResponse.ok<AccountsResponse>(
             AccountsResponse(
                 agencia = "0001",
                 numero = "999999",
+                instituicao = Institution("ITAÚ UNIBANCO S.A.", "60701190"),
+                titular = AccountOwner(
+                    "Caico Costa",
+                    "99999999999"
+                )
+            )
+        )
+    }
+
+    fun accountResponseBcb(key: String): MutableHttpResponse<CreateKeyBcbResponse> {
+        return HttpResponse.created<CreateKeyBcbResponse>(
+            CreateKeyBcbResponse(
+                "CPF",
+                key,
+                BankAccount(
+                    "60701190",
+                    "0001",
+                    "999999",
+                    AccountType.CACC
+                ),
+                Owner(
+                    OwnerType.NATURAL_PERSON,
+                    "CAICO COSTA",
+                    "99999999999"
+                ),
+                LocalDateTime.now()
             )
         )
     }

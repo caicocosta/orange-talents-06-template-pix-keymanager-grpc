@@ -4,6 +4,7 @@ import br.com.zupacademy.caico.DeletePixKeyRequest
 import br.com.zupacademy.caico.KeyManagerDeleteServiceGrpc
 import br.com.zupacademy.caico.TypeAccount
 import br.com.zupacademy.caico.TypeKey
+import br.com.zupacademy.caico.externalservices.bcb.*
 import br.com.zupacademy.caico.registerkeys.KeyRepository
 import br.com.zupacademy.caico.registerkeys.PixKeys
 import io.grpc.ManagedChannel
@@ -13,12 +14,18 @@ import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.MutableHttpResponse
+import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
+import java.time.LocalDateTime
 import java.util.*
+import javax.inject.Inject
 import org.junit.jupiter.api.assertThrows as myAsserts
 
 @MicronautTest(transactional = false)
@@ -29,6 +36,10 @@ internal class DeleteKeysEndpointTest(
 
     lateinit var key: PixKeys
 
+    @Inject
+    lateinit var clientBcb: ClientBcb
+    lateinit var request: DeleteKeyBcbRequest
+
     @BeforeEach
     internal fun setUp() {
         key = PixKeys(
@@ -38,6 +49,15 @@ internal class DeleteKeysEndpointTest(
             TypeAccount.CONTA_CORRENTE
         )
         keyRepository.save(key)
+
+        request = DeleteKeyBcbRequest(
+            UUID.randomUUID().toString(),
+            ""
+        )
+
+        Mockito.`when`(clientBcb
+            .delete(request, UUID.randomUUID().toString()))
+            .thenReturn(accountResponseBcb())
     }
 
     @AfterEach
@@ -46,7 +66,7 @@ internal class DeleteKeysEndpointTest(
     }
 
     @Test
-    internal fun `deve removar um registro no banco`() {
+    internal fun `deve remover um registro no banco`() {
 
         val response = grpcClient.delete(DeletePixKeyRequest.newBuilder()
             .setUuidUsuario(key.clientId.toString())
@@ -132,6 +152,22 @@ internal class DeleteKeysEndpointTest(
             assertEquals(Status.INVALID_ARGUMENT.code, error.status.code)
             assertEquals("Invalid UUID string: ", error.status.description)
         }
+    }
+
+    fun accountResponseBcb(): MutableHttpResponse<DeleteKeyBcbResponse> {
+        return HttpResponse.created<DeleteKeyBcbResponse>(
+            DeleteKeyBcbResponse(
+                "CPF",
+                "teste",
+                LocalDateTime.now()
+            )
+        )
+    }
+
+
+    @MockBean(ClientBcb::class)
+    fun clientBcb(): ClientBcb? {
+        return Mockito.mock(ClientBcb::class.java)
     }
 
     @Factory

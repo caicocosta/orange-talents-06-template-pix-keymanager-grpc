@@ -14,6 +14,10 @@ service KeyManagerDeleteService {
   rpc delete (DeletePixKeyRequest) returns (DeletePixKeyResponse) {}
 }
 
+service KeyManagerFindService {
+  rpc find (FindPixKeyRequest) returns (FindPixKeyResponse) {}
+}
+
 enum TypeKey{
   UNKNOWN = 0;
   DOCUMENT = 1;
@@ -46,4 +50,27 @@ message DeletePixKeyRequest{
 
 message DeletePixKeyResponse{
   string uuidUsuario = 1;
+}
+
+message Accounts {
+  string instituicao = 1;
+  string agencia = 2;
+  string numero = 3;
+  TypeAccount typeAccount = 4;
+}
+
+message FindPixKeyRequest {
+  string uuidUsuario = 1;
+  string pixId = 2;
+  string key = 3;
+}
+
+message FindPixKeyResponse {
+  string pixId = 1;
+  string clientId = 2;
+  TypeKey typeKey = 3;
+  string key = 4;
+  string nome = 5;
+  string cpf = 6;
+  Accounts account = 7;
 }

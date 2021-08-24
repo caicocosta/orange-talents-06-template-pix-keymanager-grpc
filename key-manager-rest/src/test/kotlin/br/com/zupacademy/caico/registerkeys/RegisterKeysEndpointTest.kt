@@ -9,7 +9,6 @@ import br.com.zupacademy.caico.externalservices.itau.AccountOwner
 import br.com.zupacademy.caico.externalservices.itau.AccountsResponse
 import br.com.zupacademy.caico.externalservices.itau.Institution
 import br.com.zupacademy.caico.externalservices.itau.ItauClient
-import br.com.zupacademy.caico.validators.KeyTypeValidator
 import io.grpc.ManagedChannel
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
@@ -18,11 +17,11 @@ import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
-import io.micronaut.http.HttpStatus
 import io.micronaut.http.MutableHttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -42,9 +41,6 @@ internal class RegisterKeysEndpointTest(
 
     @Inject
     lateinit var clientBcb: ClientBcb
-
-    @Inject
-    lateinit var keyTypeValidator: KeyTypeValidator
 
     lateinit var key: PixKeys
 

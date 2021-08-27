@@ -6,6 +6,8 @@ option java_outer_classname = "KeyManagerRestOuterClass";
 
 package br.com.zupacademy.caico;
 
+import "google/protobuf/timestamp.proto";
+
 service KeyManagerRestService {
   rpc register (KeyManagerRequest) returns (KeyManagerResponse) {}
 }
@@ -16,6 +18,10 @@ service KeyManagerDeleteService {
 
 service KeyManagerFindService {
   rpc find (FindPixKeyRequest) returns (FindPixKeyResponse) {}
+}
+
+service KeyManagerDetailsService {
+  rpc findDetails (FindPixKeyDetailsRequest) returns (FindPixKeyDetailsResponse) {}
 }
 
 enum TypeKey{
@@ -73,4 +79,20 @@ message FindPixKeyResponse {
   string nome = 5;
   string cpf = 6;
   Accounts account = 7;
+}
+
+message FindPixKeyDetailsRequest {
+  string uuidUsuario = 1;
+}
+
+message FindPixKeyDetailsResponse{
+  message Key{
+    string pixId = 1;
+    TypeKey typeKey = 2;
+    TypeAccount typeAccount = 3;
+    google.protobuf.Timestamp criadoEm = 4;
+  }
+
+  string clientId = 1;
+  repeated Key keys = 2;
 }

@@ -47,8 +47,8 @@ class FindKeyService(
         return FindKeyResponse(
             existingKey.typeKey,
             existingKey.key,
-            accountDetails.body(),
-            bcbKey.body().bankAccount.accountType
+            accountDetails.body()!!,
+            bcbKey.body().bankAccount.accountType!!
         )
 
     }

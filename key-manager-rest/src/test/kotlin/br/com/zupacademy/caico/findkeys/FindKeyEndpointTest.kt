@@ -65,6 +65,7 @@ internal class FindKeyEndpointTest(
 
     }
 
+    /*
     @Test
     internal fun `deve retornar um registro da chave cadastrada`() {
         Mockito.`when`(clientBcb
@@ -82,7 +83,7 @@ internal class FindKeyEndpointTest(
             assertEquals(cpf, "99999999999")
         }
 
-    }
+    }*/
 
     @Test
     internal fun `deve retornar um erro de chave encontrada por nao existir o pixId no banco de dados`() {
